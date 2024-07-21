@@ -1,0 +1,12 @@
+main {
+  flex:auto,
+}
+body {
+  height: 100vh;
+}
+main {
+  height: 100vh;
+}
+footer {
+  position: fixed; bottom: 0; width: 100%
+}
