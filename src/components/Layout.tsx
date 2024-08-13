@@ -1,30 +1,30 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import DrawerHeader from './DrawerHeader';
-import { Outlet } from 'react-router-dom';
-import ColorConfig from '../constatns/ColorConfig';
-import Footer from './Footer';
+import * as React from "react";
+import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Header from "./Header";
+import Sidebar from "./Sidebar";
+import DrawerHeader from "./DrawerHeader";
+import { Outlet } from "react-router-dom";
+import ColorConfig from "../constatns/ColorConfig";
+import Footer from "./Footer";
 
 const drawerWidth = 240;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginLeft: `-${drawerWidth}px`,
   backgroundColor: ColorConfig.mainBg,
-  height: '100hv',
+  height: "100hv",
   ...(open && {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -44,10 +44,12 @@ export default function Layout() {
   };
 
   return (
-    <Box sx={{ 
-      display: 'flex',
-      backgroundColor: ColorConfig.mainBg,
-     }}>
+    <Box
+      sx={{
+        display: "flex",
+        backgroundColor: ColorConfig.mainBg,
+      }}
+    >
       <CssBaseline />
       <Header open={open} handler={handleDrawerOpen} />
       <Sidebar open={open} handler={handleDrawerClose} />
@@ -56,6 +58,6 @@ export default function Layout() {
         <Outlet />
       </Main>
       <Footer />
-      </Box>
+    </Box>
   );
 }

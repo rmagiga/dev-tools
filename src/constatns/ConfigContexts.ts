@@ -1,8 +1,7 @@
 export type DrawerConfigType = {
-    drawerWidth: number,
-}
+  drawerWidth: number;
+};
 
 export const DrawerConfig: DrawerConfigType = {
-    drawerWidth: 240,
-}
-
+  drawerWidth: 240,
+};
