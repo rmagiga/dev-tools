@@ -77,7 +77,7 @@ function Sidebar(props: SidebarProps) {
         <Divider />
         <List>
           {["日付相互変換"].map((text, index) => (
-            <ListItem key={text} disablePadding>
+            <ListItem key={index} disablePadding>
               <MyListItemButtonLink
                 to="/datetime"
                 sx={{
