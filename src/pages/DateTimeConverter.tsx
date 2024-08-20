@@ -136,7 +136,7 @@ function DateTimeConverter() {
             onChange={handleChangeInputType}
           >
             {inputTypes.map((m) => (
-              <MenuItem value={m.value}>{m.name}</MenuItem>
+              <MenuItem key={m.value} value={m.value}>{m.name}</MenuItem>
             ))}
           </TextField>
         </Grid>
@@ -158,7 +158,7 @@ function DateTimeConverter() {
             onChange={handleChangeTimeZone}
           >
             {timeZoneList().map((m) => (
-              <MenuItem value={m}>{m}</MenuItem>
+              <MenuItem key={m} value={m}>{m}</MenuItem>
             ))}
           </TextField>
         </Grid>
