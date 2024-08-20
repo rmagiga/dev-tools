@@ -130,6 +130,8 @@ function DateTimeConverter() {
         <Grid item xs={2}>
           <TextField
             select
+            InputLabelProps={{ htmlFor: 'inputDateType' }}
+            InputProps={{id: 'inputDateType'}}
             label="入力日付形式"
             fullWidth
             defaultValue={inputType}
@@ -142,6 +144,7 @@ function DateTimeConverter() {
         </Grid>
         <Grid item xs={7}>
           <TextField
+            id="inputDateText"
             label="日付を入力してください"
             fullWidth
             onChange={handleChangeText}
@@ -152,6 +155,8 @@ function DateTimeConverter() {
         <Grid item xs={3}>
           <TextField
             select
+            InputLabelProps={{ htmlFor: 'inputTimeZone' }}
+            InputProps={{id: 'inputTimeZone'}}
             label="TimeZone"
             fullWidth
             defaultValue={timeZone}
