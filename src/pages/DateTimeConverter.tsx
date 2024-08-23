@@ -28,10 +28,13 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 function DateTimeConverter() {
-  const [dateTimeValue, setDateTimeValue] = useState<string>("");
+  const initDateTime = DateTime.fromSeconds(DateTime.now().toUnixInteger());
+  const [dateTime, setDateTime] = useState<DateTime>(initDateTime);
   const [timeZone, setTimeZone] = useState<string>("Asia/Tokyo");
+  const [dateTimeValue, setDateTimeValue] = useState<string>(
+    initDateTime.toFormat("yyyy/MM/dd HH:mm:ss")
+  );
   const [dateTimeError, setDateTimeError] = useState(false);
-  const [dateTime, setDateTime] = useState<DateTime>(DateTime.now());
   const [inputType, setInputType] = useState<number>(0);
 
   const handleChangeText = (e: ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +82,7 @@ function DateTimeConverter() {
       ),
       createData("RFC 2822", dateTime.toRFC2822() ?? ""),
       createData("Unix timestamps (秒)", dateTime.toUnixInteger().toString()),
+      createData("Unix timestamps (ミリ秒)", dateTime.toMillis().toString()),
       createData(
         "ObjectId (MongoDB)",
         unixTimeToObjectId(dateTime.toUnixInteger())
@@ -130,15 +134,17 @@ function DateTimeConverter() {
         <Grid item xs={2}>
           <TextField
             select
-            InputLabelProps={{ htmlFor: 'inputDateType' }}
-            InputProps={{id: 'inputDateType'}}
+            InputLabelProps={{ htmlFor: "inputDateType" }}
+            InputProps={{ id: "inputDateType" }}
             label="入力日付形式"
             fullWidth
             defaultValue={inputType}
             onChange={handleChangeInputType}
           >
             {inputTypes.map((m) => (
-              <MenuItem key={m.value} value={m.value}>{m.name}</MenuItem>
+              <MenuItem key={m.value} value={m.value}>
+                {m.name}
+              </MenuItem>
             ))}
           </TextField>
         </Grid>
@@ -150,20 +156,23 @@ function DateTimeConverter() {
             onChange={handleChangeText}
             helperText={dateTimeError ? "日付の解析に失敗しました。" : ""}
             error={dateTimeError}
+            defaultValue={dateTimeValue}
           />
         </Grid>
         <Grid item xs={3}>
           <TextField
             select
-            InputLabelProps={{ htmlFor: 'inputTimeZone' }}
-            InputProps={{id: 'inputTimeZone'}}
+            InputLabelProps={{ htmlFor: "inputTimeZone" }}
+            InputProps={{ id: "inputTimeZone" }}
             label="TimeZone"
             fullWidth
             defaultValue={timeZone}
             onChange={handleChangeTimeZone}
           >
             {timeZoneList().map((m) => (
-              <MenuItem key={m} value={m}>{m}</MenuItem>
+              <MenuItem key={m} value={m}>
+                {m}
+              </MenuItem>
             ))}
           </TextField>
         </Grid>
