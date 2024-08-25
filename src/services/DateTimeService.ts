@@ -1,14 +1,15 @@
 import { DateTime } from "luxon";
 import { Result, ok, err } from "neverthrow";
-import {validate, version } from "uuid";
+import { validate, version } from "uuid";
+import { isValid, decodeTime } from "ulidx";
 
 function timeZoneList(): string[] {
   return Intl.supportedValuesOf("timeZone");
 }
 
-function objectIdToUnixTime(idString: string): number | null {
+function objectIdToUnixTime(objectId: string): number | null {
   try {
-    const timestamp = parseInt(idString.substring(0, 8), 16);
+    const timestamp = parseInt(objectId.substring(0, 8), 16);
     return timestamp;
   } catch (error) {
     console.error("Invalid ObjectId string format");
@@ -31,10 +32,20 @@ function uuIdV7ToUnixTime(uuid: string): number | null {
 
     return timestampMills;
   } catch (error) {
-    console.error("Invalid ObjectId string format");
+    console.error("Invalid UUID v7 string format");
     return null;
   }
 }
+
+function ulIdToUnixTime(ulid: string): number | null {
+  try {
+    return decodeTime(ulid);
+  } catch (error) {
+    console.error("Invalid Ulid string format");
+    return null;
+  }
+}
+
 export const ConversionType = {
   AUTO: 0,
   UNIXTIME_SECONDS: 1,
@@ -44,6 +55,7 @@ export const ConversionType = {
   ISO8601_EXTENDED: 5,
   OBJECT_ID: 6,
   UUID_V7: 7,
+  ULID: 8,
 } as const;
 
 export type Values<T> = T[keyof T];
@@ -59,7 +71,10 @@ function isMongoObjectId(str: string): boolean {
   return objectIdPattern.test(str);
 }
 function isUuidV7(str: string): boolean {
-  return validate(str) && version(str) === 7
+  return validate(str) && version(str) === 7;
+}
+function isUlid(str: string): boolean {
+  return isValid(str);
 }
 
 const JP_FORMAT_STR: string = "yyyy/MM/dd HH:mm:ss";
@@ -81,6 +96,8 @@ function autoConversionType(
     return ok(ConversionType.OBJECT_ID);
   } else if (isUuidV7(input)) {
     return ok(ConversionType.UUID_V7);
+  } else if (isUlid(input)) {
+    return ok(ConversionType.ULID);
   }
   return err("日付形式ではありません。");
 }
@@ -132,6 +149,12 @@ function detectDateTimeFormat(
       const unixtimeUuid = uuIdV7ToUnixTime(input);
       if (unixtimeUuid !== null) {
         dateTime = DateTime.fromMillis(unixtimeUuid);
+      }
+      break;
+    case ConversionType.ULID:
+      const unixtimeUlid = ulIdToUnixTime(input);
+      if (unixtimeUlid !== null) {
+        dateTime = DateTime.fromMillis(unixtimeUlid);
       }
       break;
     default:
