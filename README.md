@@ -25,7 +25,7 @@
   - [x] 日本表記入力時のTimeZoneの指定
   - [x] 各種形式の出力。日本表記、ISO 8601、RFC 2822、Unix timestamps、ObjectId
   - [x] 出力形式のクリップボードコピー
-  - [ ] UUID version 7
+  - [x] UUID version 7
   - [ ] ULID
   - [ ] 日付相互変換ツールに、入力形式を選択できるプルダウンの追加
 - [ ] **基数変換ツール**: 異なる基数間で数値を変換するツール。
