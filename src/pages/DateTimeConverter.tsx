@@ -16,7 +16,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { DateTime } from "luxon";
+import { DateTime, Settings } from "luxon";
 import { ChangeEvent, useState } from "react";
 import {
   createDateConversion,
@@ -26,6 +26,8 @@ import {
   unixTimeToObjectId,
 } from "../services/DateTimeService";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+
+Settings.defaultZone = 'Asia/Tokyo'
 
 function DateTimeConverter() {
   const initDateTime = DateTime.fromSeconds(DateTime.now().toUnixInteger());
@@ -112,12 +114,17 @@ function DateTimeConverter() {
     },
     {
       name: "Unix timestamps milliseconds",
-      value: ConversionType.UNIXTIME_SECONDS,
+      value: ConversionType.UNIXTIME_MILLIS,
     },
     {
       name: "ObjectId",
       value: ConversionType.OBJECT_ID,
     },
+    {
+      name: "UUID v7",
+      value: ConversionType.UUID_V7,
+    },
+
   ];
   {
     /* レンダリング */

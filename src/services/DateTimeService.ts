@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { Result, ok, err } from "neverthrow";
+import {validate, version } from "uuid";
 
 function timeZoneList(): string[] {
   return Intl.supportedValuesOf("timeZone");
@@ -21,7 +22,31 @@ function unixTimeToObjectId(unixTime: number): string {
     "0".repeat(8 - hexSeconds.length) + hexSeconds + "0000000000000000";
   return objectId;
 }
+function extractTimestampFromUUIDv7(uuid: string): number {
+  // split the UUID into its components
+  const parts = uuid.split("-");
 
+  // the second part of the UUID contains the high bits of the timestamp (48 bits in total)
+  const highBitsHex = parts[0] + parts[1].slice(0, 4);
+
+  // convert the high bits from hex to decimal
+  // the UUID v7 timestamp is the number of milliseconds since Unix epoch (January 1, 1970)
+  const timestampInMilliseconds = parseInt(highBitsHex, 16);
+  return timestampInMilliseconds;
+}
+
+function uuIdV7ToUnixTime(uuid: string): number | null {
+  try {
+    const sp = uuid.split("-");
+    const hex = sp[0] + sp[1].slice(0, 4);
+    const timestampMills = parseInt(hex, 16);
+
+    return timestampMills;
+  } catch (error) {
+    console.error("Invalid ObjectId string format");
+    return null;
+  }
+}
 export const ConversionType = {
   AUTO: 0,
   UNIXTIME_SECONDS: 1,
@@ -30,6 +55,7 @@ export const ConversionType = {
   RFC2822: 4,
   ISO8601_EXTENDED: 5,
   OBJECT_ID: 6,
+  UUID_V7: 7,
 } as const;
 
 export type Values<T> = T[keyof T];
@@ -43,6 +69,9 @@ function isNumber(value: any): boolean {
 function isMongoObjectId(str: string): boolean {
   const objectIdPattern = /^[0-9a-fA-F]{24}$/;
   return objectIdPattern.test(str);
+}
+function isUuidV7(str: string): boolean {
+  return validate(str) && version(str) === 7
 }
 
 const JP_FORMAT_STR: string = "yyyy/MM/dd HH:mm:ss";
@@ -62,6 +91,8 @@ function autoConversionType(
     return ok(ConversionType.ISO8601_EXTENDED);
   } else if (isMongoObjectId(input)) {
     return ok(ConversionType.OBJECT_ID);
+  } else if (isUuidV7(input)) {
+    return ok(ConversionType.UUID_V7);
   }
   return err("日付形式ではありません。");
 }
@@ -71,28 +102,10 @@ function getConversionType(
   conversionType: ConversionTypeValues
 ): Result<ConversionTypeValues, string> {
   let result: Result<ConversionTypeValues, string>;
-  switch (conversionType) {
-    case ConversionType.UNIXTIME_SECONDS:
-      result = ok(ConversionType.UNIXTIME_MILLIS);
-      break;
-    case ConversionType.UNIXTIME_MILLIS:
-      result = ok(ConversionType.UNIXTIME_MILLIS);
-      break;
-    case ConversionType.JP_FORMAT:
-      result = ok(ConversionType.JP_FORMAT);
-      break;
-    case ConversionType.RFC2822:
-      result = ok(ConversionType.RFC2822);
-      break;
-    case ConversionType.ISO8601_EXTENDED:
-      result = ok(ConversionType.ISO8601_EXTENDED);
-      break;
-    case ConversionType.OBJECT_ID:
-      result = ok(ConversionType.OBJECT_ID);
-      break;
-    default:
-      result = autoConversionType(input);
-      break;
+  if (conversionType == ConversionType.AUTO) {
+    result = autoConversionType(input);
+  } else {
+    result = ok(conversionType);
   }
   return result;
 }
@@ -122,9 +135,15 @@ function detectDateTimeFormat(
       dateTime = DateTime.fromISO(input);
       break;
     case ConversionType.OBJECT_ID:
-      let unixtime = objectIdToUnixTime(input);
-      if (unixtime !== null) {
-        dateTime = DateTime.fromSeconds(unixtime);
+      const unixtimeObjectId = objectIdToUnixTime(input);
+      if (unixtimeObjectId !== null) {
+        dateTime = DateTime.fromSeconds(unixtimeObjectId);
+      }
+      break;
+    case ConversionType.UUID_V7:
+      const unixtimeUuid = uuIdV7ToUnixTime(input);
+      if (unixtimeUuid !== null) {
+        dateTime = DateTime.fromMillis(unixtimeUuid);
       }
       break;
     default:
