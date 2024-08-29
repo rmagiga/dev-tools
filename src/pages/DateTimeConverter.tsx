@@ -136,7 +136,24 @@ function DateTimeConverter() {
       <Typography paragraph>
         対応する日付形式を相互変換するツールです。
       </Typography>
-
+      <Grid item xs={12} container sx={{ marginY: 2 }} spacing={1}>
+        <Grid item xs={10}>
+          <TextField
+            id="inputDateText"
+            label="日付を入力してください"
+            fullWidth
+            onChange={handleChangeText}
+            helperText={dateTimeError ? "日付の解析に失敗しました。" : ""}
+            error={dateTimeError}
+            defaultValue={dateTimeValue}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <Button variant="contained" onClick={handleConvert} fullWidth sx={{fontSize: 24}}>
+            日時変換
+          </Button>
+        </Grid>
+      </Grid>
       <Grid item xs={12} container sx={{ marginY: 2 }} spacing={1}>
         <Grid item xs={2}>
           <TextField
@@ -154,17 +171,6 @@ function DateTimeConverter() {
               </MenuItem>
             ))}
           </TextField>
-        </Grid>
-        <Grid item xs={7}>
-          <TextField
-            id="inputDateText"
-            label="日付を入力してください"
-            fullWidth
-            onChange={handleChangeText}
-            helperText={dateTimeError ? "日付の解析に失敗しました。" : ""}
-            error={dateTimeError}
-            defaultValue={dateTimeValue}
-          />
         </Grid>
         <Grid item xs={3}>
           <TextField
@@ -184,12 +190,6 @@ function DateTimeConverter() {
           </TextField>
         </Grid>
       </Grid>
-
-      <FormControl fullWidth>
-        <Button variant="contained" onClick={handleConvert}>
-          日時変換
-        </Button>
-      </FormControl>
 
       <TableContainer component={Paper} sx={{ marginTop: 5 }}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
