@@ -117,8 +117,7 @@ function getConversionType(
 
 function detectDateTimeFormat(
   input: string,
-  conversionType: ConversionTypeValues,
-  timeZone: string
+  conversionType: ConversionTypeValues
 ): Result<DateTime, string> {
   let dateTime: DateTime | null = null;
   switch (conversionType) {
@@ -129,9 +128,7 @@ function detectDateTimeFormat(
       dateTime = DateTime.fromMillis(Number(input));
       break;
     case ConversionType.JP_FORMAT:
-      dateTime = DateTime.fromFormat(input, "yyyy/MM/dd HH:mm:ss", {
-        zone: timeZone.toString(),
-      });
+      dateTime = DateTime.fromFormat(input, "yyyy/MM/dd HH:mm:ss");
       break;
     case ConversionType.RFC2822:
       dateTime = DateTime.fromRFC2822(input);
@@ -169,12 +166,11 @@ function detectDateTimeFormat(
 function createDateConversion(
   input: string,
   conversionType: ConversionTypeValues,
-  timeZone: string
 ): Result<DateTime, string> {
   const conversionTypeRet = getConversionType(input, conversionType);
 
   return conversionTypeRet.andThen((conversionType) =>
-    detectDateTimeFormat(input, conversionType, timeZone)
+    detectDateTimeFormat(input, conversionType)
   );
 }
 
