@@ -10,15 +10,17 @@ import {
   ListItemText,
   useTheme,
 } from "@mui/material";
-import { DrawerConfig } from "../constatns/ConfigContexts";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import DrawerHeader from "./DrawerHeader";
-import ColorConfig from "../constatns/ColorConfig";
-import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
-
+import UpdateIcon from '@mui/icons-material/Update';
+import Forward10Icon from '@mui/icons-material/Forward10';
 import { To, Link as ReactRouterLink } from "react-router-dom";
 import { PropsWithChildren } from "react";
+
+import { DrawerConfig } from "../constatns/ConfigContexts";
+import DrawerHeader from "./DrawerHeader";
+import ColorConfig from "../constatns/ColorConfig";
+
 interface MyListItemButtonLinkProps extends ListItemButtonProps {
   to: To;
 }
@@ -40,6 +42,19 @@ type SidebarProps = {
 };
 
 const drawerWidth = DrawerConfig.drawerWidth;
+
+const menus = [
+  {
+    name: "日付相互変換",
+    path: "/datetime",
+    icon: <UpdateIcon />
+  },
+  {
+    name: "基数相互変換",
+    path: "/radix",
+    icon: <Forward10Icon />
+  }
+]
 
 function Sidebar(props: SidebarProps) {
   const theme = useTheme();
@@ -76,7 +91,26 @@ function Sidebar(props: SidebarProps) {
         </DrawerHeader>
         <Divider />
         <List>
-          {["日付相互変換"].map((text, index) => (
+          {menus.map((menu, index) => (
+            <ListItem key={index} disablePadding>
+              <MyListItemButtonLink
+                to={menu.path}
+                sx={{
+                  "&: hover": {
+                    backgroundColor: ColorConfig.sidebar.hoverBg,
+                  },
+                  paddingY: "12px",
+                  paddingX: "24px",
+                }}
+              >
+                <ListItemIcon sx={{ color: ColorConfig.sidebar.color }}>
+                  {menu.icon}
+                </ListItemIcon>
+                <ListItemText primary={menu.name} />
+              </MyListItemButtonLink>
+            </ListItem>
+          ))}
+          {/* {["日付相互変換"].map((text, index) => (
             <ListItem key={index} disablePadding>
               <MyListItemButtonLink
                 to="/datetime"
@@ -98,7 +132,7 @@ function Sidebar(props: SidebarProps) {
                 <ListItemText primary={text} />
               </MyListItemButtonLink>
             </ListItem>
-          ))}
+          ))} */}
         </List>
       </Drawer>
     </>

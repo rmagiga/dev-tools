@@ -20,6 +20,7 @@
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.20",
     "@types/intl": "^1.2.2",
+    "bignumber.js": "^9.1.2",
     "eslint-plugin-neverthrow": "^1.1.4",
     "luxon": "^3.4.4",
     "neverthrow": "^7.0.0",
