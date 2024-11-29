@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  FormControl,
   Grid,
   IconButton,
   MenuItem,
@@ -27,12 +26,13 @@ import {
 } from "../services/DateTimeService";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
-Settings.defaultZone = 'Asia/Tokyo'
+const DEFAULT_TIMEZONE: string = "Asia/Tokyo";
+Settings.defaultZone = DEFAULT_TIMEZONE;
 
 function DateTimeConverter() {
   const initDateTime = DateTime.fromSeconds(DateTime.now().toUnixInteger());
   const [dateTime, setDateTime] = useState<DateTime>(initDateTime);
-  const [timeZone, setTimeZone] = useState<string>("Asia/Tokyo");
+  const [timeZone, setTimeZone] = useState<string>(DEFAULT_TIMEZONE);
   const [dateTimeValue, setDateTimeValue] = useState<string>(
     initDateTime.toFormat("yyyy/MM/dd HH:mm:ss")
   );
@@ -45,9 +45,10 @@ function DateTimeConverter() {
 
   const handleConvert = () => {
     let value = dateTimeValue.toString();
-    let conversionType: ConversionTypeValues =
-      inputType as ConversionTypeValues;
-    const result = createDateConversion(value, conversionType, timeZone);
+    let conversionType = inputType as ConversionTypeValues;
+    Settings.defaultZone = timeZone;
+
+    const result = createDateConversion(value, conversionType);
 
     if (result.isOk()) {
       let dateTime = result.value;
@@ -59,7 +60,8 @@ function DateTimeConverter() {
   };
 
   const handleChangeTimeZone = (e: ChangeEvent<HTMLInputElement>) => {
-    setTimeZone(e.target.value);
+    const inputTimeZone = e.target.value;
+    setTimeZone(inputTimeZone);
   };
 
   const handleChangeInputType = (e: ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +78,7 @@ function DateTimeConverter() {
 
   function createRows() {
     return [
-      createData("日本表記", dateTime.toFormat("yyyy/MM/dd HH:mm:ss")),
+      createData("日本表記(日本時間)", dateTime.setZone(DEFAULT_TIMEZONE).toFormat("yyyy/MM/dd HH:mm:ss")),
       createData("ISO 8601 拡張形式(JST)", dateTime.toISO() ?? ""),
       createData(
         "ISO 8601 拡張形式(UTC)",
@@ -124,7 +126,6 @@ function DateTimeConverter() {
       name: "UUID v7",
       value: ConversionType.UUID_V7,
     },
-
   ];
   {
     /* レンダリング */
@@ -136,7 +137,29 @@ function DateTimeConverter() {
       <Typography paragraph>
         対応する日付形式を相互変換するツールです。
       </Typography>
-
+      <Grid item xs={12} container sx={{ marginY: 2 }} spacing={1}>
+        <Grid item xs={10}>
+          <TextField
+            id="inputDateText"
+            label="日付を入力してください"
+            fullWidth
+            onChange={handleChangeText}
+            helperText={dateTimeError ? "日付の解析に失敗しました。" : ""}
+            error={dateTimeError}
+            defaultValue={dateTimeValue}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <Button
+            variant="contained"
+            onClick={handleConvert}
+            fullWidth
+            sx={{ height: "100%", fontSize: 18 }}
+          >
+            変換
+          </Button>
+        </Grid>
+      </Grid>
       <Grid item xs={12} container sx={{ marginY: 2 }} spacing={1}>
         <Grid item xs={2}>
           <TextField
@@ -154,17 +177,6 @@ function DateTimeConverter() {
               </MenuItem>
             ))}
           </TextField>
-        </Grid>
-        <Grid item xs={7}>
-          <TextField
-            id="inputDateText"
-            label="日付を入力してください"
-            fullWidth
-            onChange={handleChangeText}
-            helperText={dateTimeError ? "日付の解析に失敗しました。" : ""}
-            error={dateTimeError}
-            defaultValue={dateTimeValue}
-          />
         </Grid>
         <Grid item xs={3}>
           <TextField
@@ -184,12 +196,6 @@ function DateTimeConverter() {
           </TextField>
         </Grid>
       </Grid>
-
-      <FormControl fullWidth>
-        <Button variant="contained" onClick={handleConvert}>
-          日時変換
-        </Button>
-      </FormControl>
 
       <TableContainer component={Paper} sx={{ marginTop: 5 }}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
